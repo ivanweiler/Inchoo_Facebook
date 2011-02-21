@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <sections>
+        <customer>
+        	<groups>
+        		<facebook translate="label" module="facebook">
+                    <label>Facebook Connect Options</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <api_key translate="label" module="facebook">
+                            <label>Application Api Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_key>
+						<secret translate="label" module="facebook">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </secret>
+                    </fields>
+	            </facebook>
+            </groups>
+		</customer>
+	</sections>
+</config>

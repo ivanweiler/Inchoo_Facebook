@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <modules>
+        <Inchoo_Facebook>
+             <version>0.9.0</version>
+        </Inchoo_Facebook>
+    </modules>
+    
+    <global>
+        <models>
+            <facebook>
+                <class>Inchoo_Facebook_Model</class>
+            </facebook>
+        </models>
+		<blocks>
+			<facebook>
+                <class>Inchoo_Facebook_Block</class>
+            </facebook>
+        </blocks>
+        <helpers>
+			<facebook>
+                <class>Inchoo_Facebook_Helper</class>
+            </facebook>
+        </helpers>
+        
+		<resources>
+			<facebook_setup>
+				<setup>
+	               <module>Inchoo_Facebook</module>
+	               <class>Mage_Customer_Model_Entity_Setup</class>
+				</setup>
+			</facebook_setup>
+		</resources>
+    </global>
+    
+    <frontend>
+		<routers>
+            <facebook>
+                <use>standard</use>
+                <args>
+                    <module>Inchoo_Facebook</module>
+                    <frontName>facebook</frontName>
+                </args>
+            </facebook>
+        </routers>
+		<layout>
+            <updates>
+                <facebook>
+                    <file>facebook.xml</file>
+                </facebook>
+            </updates>
+        </layout>
+    </frontend>
+    
+</config>
