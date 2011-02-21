@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Facebook Connect Magento Extension</title>
+
+<style type="text/css">
+*{ 
+	margin: 0; 
+	padding: 0; 
+}
+body{
+	font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+}
+#header{
+	background-color:#3B5998;
+	color: #fff;
+	font-weight:bold;
+	height: 20px;
+	padding-top: 15px;
+}
+#header h1{ 
+	font-size: 18px; 
+	width: 800px; 
+	margin: 0 auto; 
+	font-weight:normal; 
+}
+#main{ 
+	width: 796px; 
+	margin: 0 auto; 
+	padding: 20px 0; 
+	min-height: 700px; 
+}
+#main h1{ 
+	margin-bottom: 20px; 
+	font-size: 18px; 
+}
+#main h2{ 
+	font-size: 14px; 
+	border-bottom:1px solid #ccc; 
+	padding: 3px 0; 
+	margin: 20px 0 10px 0; 
+}
+#main p{
+	line-height: 15px; 
+	margin: 5px 0; 
+}
+#footer{
+	border-top: 1px solid #ddd;
+	margin: 20px auto 0;
+	padding: 5px 0 15px 0;
+	width: 800px;
+}
+a{ color: #3B5998; text-decoration: none;  }
+a:hover{ text-decoration: underline; }
+code{ display: block; background-color: #F9F9F9; padding: 8px; margin: 5px 0; border: 1px solid #eee; }
+
+</style>
+</head>
+
+<body>
+	
+	<div id="header">
+	<h1>Facebook Connect Magento Extension</h1>
+	</div>
+	
+	<div id="main">
+	
+	
+	<h2 id="connect">Facebook Connect</h2>
+	<p>
+		Facebook Connect is a set of APIs from Facebook that enable Facebook members to log onto third-party websites, applications, mobile devices and gaming systems with their Facebook identity.
+		In other words, this extension enables one-click customer registration and login with their Facebook account.
+	</p>
+	<p>
+		"Every website wants registration to be easy. We have 300 million users, simple registration, and robust data. By increasing traffic, user engagement, and registrations, you can grow your revenue and increase monetization opportunities." 
+		- <a href="http://developers.facebook.com/connect.php?tab=website" target="_blank">Facebook Connect site</a>
+	</p>
+	<p>
+		Fully functional demo can be seen on our <a href="http://playground.surgeworks4u.com/" target="_blank">playground</a>. There is also <a href="http://inchoo.net/ecommerce/magento/facebook-connect-magento-extension/" target="_blank">official article on inchoo.net</a> that provides additional help and comments.
+	</p>
+
+	<h2 id="about">Application setup</h2>
+	<p>
+		For Facebook Connect to work you need to <a href="http://www.facebook.com/developers/createapp.php" target="_blank">Setup Application on Facebook</a> and obtain its API Key and Application Secret. 
+	</p>
+	<p>	
+		Use your store name as application name and read and accept terms of service. On second screen switch to Connect tab and set Connect URL to the store domain where you plan to implement Facebook Connect.
+		Switch to Advanced tab, set the domain that your emails will be coming from in Email Domain field and save settings.
+	</p>
+	<p>
+		Other Connect settings are optional, but you might want to add store logo for example.
+	</p>
+	<p>
+		Once you obtain two keys navigate to Magento Administration and copy/paste them to appropriate fields under Configuration-Customer-Facebook Connect.
+	</p>
+	
+	<h2 id="about">Theme implementation</h2>
+	
+
+	<p>
+		Default template files (template/facebook/) and layout (layout/facebook.xml) makes Facebook Connect work out of the box, 
+		but we tried to make customizations as easy as possible to suit your own Magento needs. 
+	</p>
+	<p>	
+		All you need to do is add button or link with "facebook-connect" rel attribute set anywhere in the theme, static block or cms page,
+		for example
+		<br />
+		<code>
+			<?php echo $this->htmlEscape('<button rel="facebook-connect" class="form-button" type="submit"><span>Connect with Facebook</span></button>') ?>
+		</code>
+		
+		or simply as
+		<code>
+			<?php echo $this->htmlEscape('<a rel="facebook-connect">Connect with Facebook</a>') ?>
+		</code>	
+	</p>
+	
+	<p>
+		Registration and login are implemented the same way, since extension automatically registers new users and logs in existing ones. This is what makes it simple and usable for your customers.
+	</p>
+	
+
+	<h2 id="about">Release notes</h2>
+	<p>
+		v.0.9.1 <br />
+		Added compatibility with older Magento CE 1.3.2.x versions.
+	</p>
+	<p>
+		v.0.9.0 <br />
+		First public release. Compatible with Magento CE 1.4.x.
+	</p>
+	
+	<h2 id="about">About</h2>
+	
+	<p>
+		This exstension is using brand new Facebook features, like email sharing and open source APIs. We hope it will grow along with them. <br />
+		It is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
+	</p>
+
+	<br />
+	<p>
+		author:     Ivan Weiler, Inchoo <web@inchoo.net> <br />
+		copyright:  Copyright (c) 2010 Inchoo d.o.o. (<a href="http://inchoo.net">http://inchoo.net</a>) <br />
+		license:    <a href="http://opensource.org/licenses/gpl-license.php" target="_blank">GNU General Public License (GPL)</a><br />
+
+	</p>
+	<br />
+	<p>
+		We hope You enjoy our modules as much as we did developing them!
+	</p>
+	
+	</div>
+	
+	<div id="footer">
+		<p>© <a href="http://inchoo.net">Inchoo</a> 2010</p>
+	</div>
+	
+</body>
+</html>

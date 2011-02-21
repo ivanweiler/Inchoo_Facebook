@@ -122,10 +122,10 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 					->setPassword($randomPassword)
 					->setConfirmation($randomPassword)
 					->setFacebookUid($this->_getSession()->getUid());
-					
+
 		//FB: Show my sex in my profile.
-		if($standardInfo['sex']){
-			$genderOptions = Mage::getResourceSingleton('customer/customer')->getAttribute('gender')->getSource()->getAllOptions();
+		if($standardInfo['sex'] && $gender=Mage::getResourceSingleton('customer/customer')->getAttribute('gender')){
+			$genderOptions = $gender->getSource()->getAllOptions();
 			foreach($genderOptions as $option){
 				if($option['label']==ucfirst($standardInfo['sex'])){
 					 $customer->setGender($option['value']);
@@ -136,9 +136,15 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		
 		//FB: Show my full birthday in my profile.
        	if(count(explode('/',$standardInfo['birthday_date']))==3){
-       		//if not mistaken, new in 1.4
-       		$filtered = $this->_filterDates(array('dob'=>$standardInfo['birthday_date']), array('dob'));
-			$customer->setDob(current($filtered));
+			
+       		$dob = $standardInfo['birthday_date'];
+			
+       		if(method_exists($this,'_filterDates')){
+       			$filtered = $this->_filterDates(array('dob'=>$dob), array('dob'));
+       			$dob = current($filtered);
+       		}
+
+			$customer->setDob($dob);
 		}
 		
 		//$customer->getGroupId(); // needed in 1.3.x.x ?

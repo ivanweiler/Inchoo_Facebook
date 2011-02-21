@@ -1,0 +1,36 @@
+
+<!-- BEGIN Inchoo Facebook Connect -->
+<div id="fb-root"></div>
+<?php if($this->isSecure()): ?>
+<script src="https://s-static.ak.fbcdn.net/connect/en_US/core.js" type="text/javascript"></script>
+<?php else: ?>
+<script src="http://static.ak.fbcdn.net/connect/en_US/core.js" type="text/javascript"></script>
+<?php endif; ?>
+<script type="text/javascript">
+FB.init({ apiKey:<?php echo json_encode($this->getApiKey()) ?>, cookie:true });
+
+document.observe('click', function(e){
+	if (e.element().match('a[rel^=facebook-connect]') || e.element().match('button[rel^=facebook-connect]')) {
+		e.stop();
+		FB.login(function(response){
+			
+			if(response.status=='connected') setLocation('<?php echo $this->getConnectUrl() ?>');
+			
+		}, {perms:<?php echo $this->getRequiredPermissions() ?>});
+	}
+});
+
+<?php /*
+document.observe("dom:loaded", function(){
+	$$('.facebook-connect').each(function(el){
+			el.observe('click',function(e){
+				Event.stop(e);
+				FB.login(function(response){ 
+					setLocation('<?php echo $this->getConnectUrl() ?>'); 
+				}, {perms:<?php echo $this->getRequiredPermissions() ?>});
+			}); 
+	});
+});
+*/ ?>
+</script>
+<!-- END Inchoo Facebook Connect -->

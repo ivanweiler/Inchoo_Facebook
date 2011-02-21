@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Inchoo_Facebook>
-             <version>0.9.0</version>
+             <version>0.9.1</version>
         </Inchoo_Facebook>
     </modules>
     
@@ -29,6 +29,9 @@
 	               <module>Inchoo_Facebook</module>
 	               <class>Mage_Customer_Model_Entity_Setup</class>
 				</setup>
+				<connection>
+                    <use>core_setup</use>
+                </connection>
 			</facebook_setup>
 		</resources>
     </global>
