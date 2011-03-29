@@ -4,23 +4,19 @@
  *
  * @category   Inchoo
  * @package    Inchoo_Facebook
- * @author     Ivan Weiler, Inchoo <web@inchoo.net>
- * @copyright  Copyright (c) 2010 Inchoo d.o.o. (http://inchoo.net)
- * @license    http://opensource.org/licenses/gpl-license.php  GNU General Public License (GPL)
+ * @author     Inchoo <web@inchoo.net>
  */
-
 class Inchoo_Facebook_Model_Client
 {
-	const FACEBOOK_REST_URI = 'http://api.facebook.com/restserver.php';
-	
+	const FACEBOOK_REST_URI = 'https://api.facebook.com/restserver.php';
+
 	protected $_apiKey;
-	protected $_secret;
-	protected $_sessionKey;
+	protected $_secret;	
+	protected $_session;
 	
 	protected $_methodType;
-	protected static $_httpClient;
-	
-	protected $_validPermissions = array('email', 'read_stream', 'publish_stream', 'offline_access', 'status_update', 'photo_upload', 'create_event', 'rsvp_event', 'sms', 'video_upload', 'create_note', 'share_item'); 
+	protected static $_httpClient; 
+
 	
 	public function __construct()
 	{
@@ -36,33 +32,29 @@ class Inchoo_Facebook_Model_Client
 		
 		$this->_apiKey      = $args[0];
 		$this->_secret      = $args[1];
-    	$this->_sessionKey  = isset($args[2]) ? $args[2] : null;
+    	
+		$session = isset($args[2]) ? $args[2] : null;
+
+		if(is_array($session)) {
+			$this->_session  = new Varien_Object($session);
+		} elseif($session instanceof Varien_Object) {
+			$this->_session = $session;
+		} else {
+			$this->_session  = new Varien_Object();
+		}
 	}
 
-	public function setSessionKey($sessionKey)
+	public function setSession($session)
     {
-    	$this->_sessionKey  = $sessionKey;
+    	$this->_session = $session;
+    	return $this;
     }
     
-    public function getValidPermissions()
-    {
-    	return $this->_validPermissions;
-    }
-    
-	private static function _getHttpClient()
-    {
-        if (!self::$_httpClient instanceof Zend_Http_Client) {
-            self::$_httpClient = new Zend_Http_Client();
-        }
-
-        return self::$_httpClient;
-    }
-	
-	private function _generateSig($params_array)
+	public function generateSig($params)
 	{
 		$str = '';
-    	ksort($params_array);
-    	foreach ($params_array as $k=>$v) {
+    	ksort($params);
+    	foreach ($params as $k=>$v) {
       		$str .= "$k=$v";
     	}
     	$str .= $this->_secret;
@@ -71,18 +63,21 @@ class Inchoo_Facebook_Model_Client
 	
 	private function _prepareParams($method, $params)
 	{
-
 		$defaultParams = array(
 			'api_key' => $this->_apiKey,
-			'call_id' => microtime(true),
-			'format'  => 'JSON',
-			'v'       => '1.0'
+			'format'  => 'json-strings',
 		);
 		
-		if($this->_sessionKey){
-			$defaultParams['session_key'] = $this->_sessionKey;
+		//new OAuth thingy
+		if (!isset($params['access_token'])) {
+			if ($this->_session->hasData('access_token')) {
+	        	$params['access_token'] = $this->_session->getData('access_token');
+	      	} else {
+	      		//??
+	        	$params['access_token'] = $this->_apiKey .'|'. $this->_secret;
+	      	}
 		}
-		
+      	
 		$params = array_merge($defaultParams, $params);
 	    foreach ($params as $key => &$val) {
       		if (!is_array($val)) continue;
@@ -94,12 +89,11 @@ class Inchoo_Facebook_Model_Client
 		if(isset($params['sig'])) {
 			unset($params['sig']);
 		}
-		$params['sig'] = $this->_generateSig($params);
+		$params['sig'] = $this->generateSig($params);
 		
 		return $params;
 	}
-	
-	
+		
 	public function call($method, $args=array())
 	{
 		$params = $this->_prepareParams($method, $args);
@@ -113,7 +107,7 @@ class Inchoo_Facebook_Model_Client
 		try {
 			$response = $client->request();
 		} catch(Exception $e) {
-			throw new Mage_Core_Exception('Service unavaliable');
+			throw new Mage_Core_Exception('Service unavaliable'); //$e->getMessage()
 		}
 		
 		if(!$response->isSuccessful()) {
@@ -121,11 +115,6 @@ class Inchoo_Facebook_Model_Client
 		}
 		
 		$result = Zend_Json::decode($response->getBody());
-
-		//json decode returns float on long uid number? is_json check? old php?
-		if(is_float($result)){
-			$result = $response->getBody();
-		}
 
 		if(is_array($result) && isset($result['error_code'])) {
 			throw new Mage_Core_Exception($result['error_msg'], $result['error_code']);
@@ -152,14 +141,13 @@ class Inchoo_Facebook_Model_Client
 		return $this->call('batch.run', $params);
 	}
 	
-	
-	private function __get($var)
+	public function __get($var)
 	{
 		$this->_methodType = strtolower($var);
 		return $this;
 	}
-	
-	private function __call($method,$args)
+
+	public function __call($method,$args)
 	{
 		if(empty($this->_methodType)) {
 			throw new Mage_Core_Exception('Invalid method "'.$method.'"');
@@ -167,6 +155,14 @@ class Inchoo_Facebook_Model_Client
 
 		return $this->call($this->_methodType.'.'.$method, isset($args[0]) ? $args[0] : array());
 	}
+	
+	private static function _getHttpClient()
+    {
+        if (!self::$_httpClient instanceof Varien_Http_Client) {
+            self::$_httpClient = new Varien_Http_Client();
+        }
 
+        return self::$_httpClient;
+    }
 
 }

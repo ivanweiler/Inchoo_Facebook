@@ -2,27 +2,27 @@
 <layout>
 
 	<default>
-		<reference name="before_body_end">
+        
+		<reference name="after_body_start">
             <block type="facebook/template" template="facebook/init.phtml" name="facebook_init" />
         </reference>
+        
+        <!-- example of old synchronous implementation
+		<reference name="before_body_end">
+            <block type="facebook/template" template="facebook/init_synchronous.phtml" name="facebook_init" />
+        </reference>
+        -->
 
 		<reference name="top.links">
-			<action method="addLink"><label>Connect with Facebook</label><url helper="facebook/getConnectUrl"/><title>Facebook Connect</title><prepare/><urlParams/><position>110</position><liParams/><aParams><rel>facebook-connect</rel></aParams></action>
-        </reference>
+			<action method="addLink" translate="label title" module="facebook"><label>Connect with Facebook</label><url helper="facebook/getConnectUrl"/><title>Facebook Connect</title><prepare/><urlParams/><position>110</position><liParams/><aParams><rel>facebook-connect</rel></aParams></action>
+        </reference>        
+        
 	</default>
-
-	<facebook_index_index>
-		<reference name="root">
-			<action method="unsetChildren" />
-            <action method="setTemplate"><template>facebook/help.phtml</template></action>
-        </reference>
-	</facebook_index_index>
 	
 	<customer_account_login>
 		<reference name="content">
     		<block type="facebook/template" template="facebook/login.phtml" name="facebook_login" />
     	</reference>
 	</customer_account_login>
-
 
 </layout>

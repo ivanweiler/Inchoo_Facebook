@@ -10,6 +10,7 @@ class Inchoo_Facebook_Model_Config
 {
 	const XML_PATH_API_KEY = 'customer/facebook/api_key';
 	const XML_PATH_SECRET = 'customer/facebook/secret';
+	const XML_PATH_LOCALE = 'customer/facebook/locale';
 	
     public function isEnabled($storeId=null)
     {
@@ -33,6 +34,11 @@ class Inchoo_Facebook_Model_Config
     public function getRequiredPermissions()
     {
     	return array('email');
+    }
+    
+    public function getLocale($storeId=null)
+    {
+    	return Mage::getStoreConfig(self::XML_PATH_LOCALE, $storeId);
     }
 
 }

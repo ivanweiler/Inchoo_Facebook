@@ -15,10 +15,8 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 	public function connectAction()
     {
 
-        $this->_getSession()->checkConnection();
-        
     	if(!$this->_getSession()->isConnected()) {
-    		$this->_getCustomerSession()->addError($this->__('Facebook Connection failed.'));
+    		$this->_getCustomerSession()->addError($this->__('Facebook connection failed.'));
     		$this->_redirect('customer/account'); //logged in ok?
     		return;
     	}
@@ -60,7 +58,14 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
         }
         
         if($uidExist) {
-			$this->_getCustomerSession()->setCustomerAsLoggedIn($collection->getFirstItem());
+        	$uidCustomer = $collection->getFirstItem();
+        	//additional fix:
+			if($uidCustomer->getConfirmation()){
+				$uidCustomer->setConfirmation(null);
+				Mage::getResourceModel('customer/customer')->saveAttribute($uidCustomer, 'confirmation');
+			}
+			//
+			$this->_getCustomerSession()->setCustomerAsLoggedIn($uidCustomer);
 			$this->_redirectReferer();
 			return;        	
         }
@@ -74,7 +79,11 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 					'fields' => 'first_name, last_name, contact_email, sex, birthday_date'
 			));
 		}catch(Mage_Core_Exception $e){
-    		$this->_getCustomerSession()->addError($this->__('Facebook Connection failed. Service temporarily unavailable.'));
+    		$this->_getCustomerSession()->addError(
+    			$this->__('Facebook connection failed.') .
+    			' ' . 
+    			$this->__('Service temporarily unavailable.')
+    		);
     		$this->_redirect('customer/account/login');
     		return;    		
     	}
@@ -82,15 +91,11 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		$standardInfo = current($standardInfo);
 
 		if(!$standardInfo['contact_email']) {
-			try {
-				//needs to be done to show perms dialog on next connect
-				$this->_getSession()->getClient()->auth->revokeExtendedPermission(array(
-					'perm' => 'email'
-				));
-			} catch(Mage_Core_Exception $e) {
-			}
-
-    		$this->_getCustomerSession()->addError($this->__('Facebook Connection failed. Facebook contact email address is required.'));
+    		$this->_getCustomerSession()->addError(
+    			$this->__('Facebook connection failed.') .
+    			' ' .
+				$this->__('Email address is required.')
+    		);
     		$this->_redirect('customer/account/login');
     		return;
 		}
@@ -102,6 +107,12 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		if($customer->getId()){
 			$customer->setFacebookUid($this->_getSession()->getUid());
 			Mage::getResourceModel('customer/customer')->saveAttribute($customer, 'facebook_uid');
+			
+			if($customer->getConfirmation()){
+				$customer->setConfirmation(null);
+				Mage::getResourceModel('customer/customer')->saveAttribute($customer, 'confirmation');
+			}
+			
 			$this->_getCustomerSession()->setCustomerAsLoggedIn($customer);
 			$this->_getCustomerSession()->addSuccess(
 				$this->__('Your Facebook account has been successfully connected. Now you can fast login using Facebook Connect anytime.')

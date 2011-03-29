@@ -14,12 +14,17 @@ class Inchoo_Facebook_Block_Template extends Mage_Core_Block_Template
 	
 	public function getConnectUrl()
 	{
-		return $this->getUrl('facebook/customer_account/connect');
+		return $this->getUrl('facebook/customer_account/connect', array('_secure'=>true));
 	}
 	
 	public function getRequiredPermissions()
 	{
 		return json_encode('email');
+	}
+	
+	public function getLocale()
+	{
+		return Mage::getSingleton('facebook/config')->getLocale();
 	}
 	
 }
