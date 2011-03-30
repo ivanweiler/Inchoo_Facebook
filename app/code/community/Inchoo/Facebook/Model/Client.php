@@ -1,23 +1,25 @@
 <?php
 /**
- * Facebook REST client
+ * Facebook Graph/Rest client
  *
  * @category   Inchoo
  * @package    Inchoo_Facebook
- * @author     Inchoo <web@inchoo.net>
+ * @author     Ivan Weiler, Inchoo <web@inchoo.net>
+ * @copyright  Copyright (c) 2011 Inchoo d.o.o. (http://inchoo.net)
+ * @license    http://opensource.org/licenses/gpl-license.php  GNU General Public License (GPL)
  */
 class Inchoo_Facebook_Model_Client
 {
 	const FACEBOOK_REST_URI = 'https://api.facebook.com/restserver.php';
+	const FACEBOOK_REST_READ_ONLY_URI = 'https://api-read.facebook.com/restserver.php';
+	const FACEBOOK_GRAPH_URI = 'https://graph.facebook.com';
 
 	protected $_apiKey;
-	protected $_secret;	
+	protected $_secret;
 	protected $_session;
-	
-	protected $_methodType;
+
 	protected static $_httpClient; 
 
-	
 	public function __construct()
 	{
 		$args = func_get_args();
@@ -49,7 +51,85 @@ class Inchoo_Facebook_Model_Client
     	$this->_session = $session;
     	return $this;
     }
-    
+	
+	public function call(/* polymorphic */)
+	{
+		$args = func_get_args();
+		if (is_array($args[0]) || substr($args[0],0,1)!='/' ) {
+			return call_user_func_array(array($this, 'rest'), $args);
+		} else {
+			return call_user_func_array(array($this, 'graph'), $args);
+		}
+	}
+	
+	public function graph($path, $params=array())
+	{
+		if ($path[0] != '/') {
+			$path = '/'.$path;
+		}
+		$url .= self::FACEBOOK_GRAPH_URI.$path;
+
+		$params['method'] = 'GET'; //??
+		
+		$result = $this->_oauthRequest($url, $params);
+		
+		if(is_array($result) && isset($result['error'])) {
+			throw new Mage_Core_Exception($result['error']['message'], 0);
+		}
+		
+		return $result;
+	}
+	
+	public function rest(/* polymorphic */)
+	{
+		$args = func_get_args();
+		if (is_array($args[0])) {
+			$params = $args[0];
+		} else {
+			$params = isset($args[1]) ? $args[1] : array(); 
+			$params['method'] = $args[0];
+		}
+		
+		$defaultParams = array(
+			'api_key' => $this->_apiKey,
+			'format'  => 'json-strings',
+		);
+		
+		$params = array_merge($defaultParams, $params);
+		
+		if($this->_isReadOnlyMethod($params['method'])) {
+			$url = self::FACEBOOK_REST_READ_ONLY_URI;
+		} else {
+			$url = self::FACEBOOK_REST_URI;
+		}
+		
+	    $result = $this->_oauthRequest($url, $params);
+	    
+		if(is_array($result) && isset($result['error_code'])) {
+			throw new Mage_Core_Exception($result['error_msg'], $result['error_code']);
+		}
+		
+	    return $result;
+	}
+	
+	public function restBatch($batch_queue)
+	{
+		$method_feed = array();
+		
+		foreach($batch_queue as $call)
+		{
+			$p = $this->_prepareParams($call);
+			$method_feed[] = http_build_query($p,'','&');
+		}
+		
+		$params = array(
+			'method_feed' => json_encode($method_feed),
+			'serial_only' => true
+		);
+		
+		return $this->rest('batch.run', $params);
+	}
+	
 	public function generateSig($params)
 	{
 		$str = '';
@@ -61,30 +141,22 @@ class Inchoo_Facebook_Model_Client
     	return md5($str);
 	}
 	
-	private function _prepareParams($method, $params)
+	protected function _prepareParams($params)
 	{
-		$defaultParams = array(
-			'api_key' => $this->_apiKey,
-			'format'  => 'json-strings',
-		);
-		
 		//new OAuth thingy
 		if (!isset($params['access_token'])) {
 			if ($this->_session->hasData('access_token')) {
 	        	$params['access_token'] = $this->_session->getData('access_token');
 	      	} else {
-	      		//??
+	      		//@todo: check this in newer fb sdk ?!
 	        	$params['access_token'] = $this->_apiKey .'|'. $this->_secret;
 	      	}
 		}
       	
-		$params = array_merge($defaultParams, $params);
 	    foreach ($params as $key => &$val) {
       		if (!is_array($val)) continue;
         	$val = Zend_Json::encode($val);
     	}
-    	
-    	$params['method'] = $method;
 		
 		if(isset($params['sig'])) {
 			unset($params['sig']);
@@ -93,67 +165,30 @@ class Inchoo_Facebook_Model_Client
 		
 		return $params;
 	}
-		
-	public function call($method, $args=array())
+	
+	protected function _oauthRequest($url, $params)
 	{
-		$params = $this->_prepareParams($method, $args);
+		$params = $this->_prepareParams($params);
 		
 		$client = self::_getHttpClient()
-				->setUri(self::FACEBOOK_REST_URI)
+				->setUri($url)
 				->setMethod(Zend_Http_Client::POST)
 				->resetParameters()
-				->setParameterPost($params);	
+				->setParameterPost($params);
 
 		try {
 			$response = $client->request();
 		} catch(Exception $e) {
-			throw new Mage_Core_Exception('Service unavaliable'); //$e->getMessage()
+			throw new Mage_Core_Exception('Service temporarily unavailable.');
 		}
 		
 		if(!$response->isSuccessful()) {
-			throw new Mage_Core_Exception('Service unavaliable');
+			throw new Mage_Core_Exception('Service temporarily unavailable.');
 		}
 		
 		$result = Zend_Json::decode($response->getBody());
-
-		if(is_array($result) && isset($result['error_code'])) {
-			throw new Mage_Core_Exception($result['error_msg'], $result['error_code']);
-		}
 		
-		return $result;
-	}
-	
-	public function batch($batch_queue)
-	{
-		$method_feed = array();
-		
-		foreach($batch_queue as $call)
-		{
-			$p = $this->_prepareParams($call['method'], $call);
-			$method_feed[] = http_build_query($p,'','&');
-		}
-		
-		$params = array(
-			'method_feed' => json_encode($method_feed),
-			'serial_only' => true
-		);
-		
-		return $this->call('batch.run', $params);
-	}
-	
-	public function __get($var)
-	{
-		$this->_methodType = strtolower($var);
-		return $this;
-	}
-
-	public function __call($method,$args)
-	{
-		if(empty($this->_methodType)) {
-			throw new Mage_Core_Exception('Invalid method "'.$method.'"');
-		}
-
-		return $this->call($this->_methodType.'.'.$method, isset($args[0]) ? $args[0] : array());
+		return $result;			
 	}
 	
 	private static function _getHttpClient()
@@ -163,6 +198,72 @@ class Inchoo_Facebook_Model_Client
         }
 
         return self::$_httpClient;
+    }
+    
+    private function _isReadOnlyMethod($method)
+    {
+		return in_array(strtolower($method), array(
+			'admin.getallocation',
+            'admin.getappproperties',
+            'admin.getbannedusers',
+            'admin.getlivestreamvialink',
+            'admin.getmetrics',
+            'admin.getrestrictioninfo',
+            'application.getpublicinfo',
+            'auth.getapppublickey',
+            'auth.getsession',
+            'auth.getsignedpublicsessiondata',
+            'comments.get',
+            'connect.getunconnectedfriendscount',
+            'dashboard.getactivity',
+            'dashboard.getcount',
+            'dashboard.getglobalnews',
+            'dashboard.getnews',
+            'dashboard.multigetcount',
+            'dashboard.multigetnews',
+            'data.getcookies',
+            'events.get',
+            'events.getmembers',
+            'fbml.getcustomtags',
+            'feed.getappfriendstories',
+            'feed.getregisteredtemplatebundlebyid',
+            'feed.getregisteredtemplatebundles',
+            'fql.multiquery',
+            'fql.query',
+            'friends.arefriends',
+            'friends.get',
+            'friends.getappusers',
+            'friends.getlists',
+            'friends.getmutualfriends',
+            'gifts.get',
+            'groups.get',
+            'groups.getmembers',
+            'intl.gettranslations',
+            'links.get',
+            'notes.get',
+            'notifications.get',
+            'pages.getinfo',
+            'pages.isadmin',
+            'pages.isappadded',
+            'pages.isfan',
+            'permissions.checkavailableapiaccess',
+            'permissions.checkgrantedapiaccess',
+            'photos.get',
+            'photos.getalbums',
+            'photos.gettags',
+            'profile.getinfo',
+            'profile.getinfooptions',
+            'stream.get',
+            'stream.getcomments',
+            'stream.getfilters',
+            'users.getinfo',
+            'users.getloggedinuser',
+            'users.getstandardinfo',
+            'users.hasapppermission',
+            'users.isappuser',
+            'users.isverified',
+            'video.getuploadlimits'
+		));    	
     }
 
 }

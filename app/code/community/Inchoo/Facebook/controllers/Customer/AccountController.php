@@ -5,19 +5,18 @@
  * @category   Inchoo
  * @package    Inchoo_Facebook
  * @author     Ivan Weiler, Inchoo <web@inchoo.net>
- * @copyright  Copyright (c) 2010 Inchoo d.o.o. (http://inchoo.net)
+ * @copyright  Copyright (c) 2011 Inchoo d.o.o. (http://inchoo.net)
  * @license    http://opensource.org/licenses/gpl-license.php  GNU General Public License (GPL)
  */
-
 class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Front_Action
 {
 
 	public function connectAction()
     {
 
-    	if(!$this->_getSession()->isConnected()) {
+    	if(!$this->_getSession()->validate()) {
     		$this->_getCustomerSession()->addError($this->__('Facebook connection failed.'));
-    		$this->_redirect('customer/account'); //logged in ok?
+    		$this->_redirect('customer/account');
     		return;
     	}
     	
@@ -74,10 +73,8 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
         //let's go with e-mail
         
         try{
-			$standardInfo = $this->_getSession()->getClient()->users->getInfo(array(
-					'uids' => $this->_getSession()->getUid(), 
-					'fields' => 'first_name, last_name, contact_email, sex, birthday_date'
-			));
+        	$standardInfo = $this->_getSession()->getClient()->call("/me");
+        	
 		}catch(Mage_Core_Exception $e){
     		$this->_getCustomerSession()->addError(
     			$this->__('Facebook connection failed.') .
@@ -88,9 +85,8 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
     		return;    		
     	}
 		
-		$standardInfo = current($standardInfo);
-
-		if(!$standardInfo['contact_email']) {
+    	//@todo: check are first_name and last_name always there
+		if(!isset($standardInfo['email'])) {
     		$this->_getCustomerSession()->addError(
     			$this->__('Facebook connection failed.') .
     			' ' .
@@ -102,7 +98,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		
 		$customer
 			->setWebsiteId(Mage::app()->getStore()->getWebsiteId())
-			->loadByEmail($standardInfo['contact_email']);
+			->loadByEmail($standardInfo['email']);
 		
 		if($customer->getId()){
 			$customer->setFacebookUid($this->_getSession()->getUid());
@@ -126,19 +122,19 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		$randomPassword = $customer->generatePassword(8);
 		
 		$customer	->setId(null)
-					->setSkipConfirmationIfEmail($standardInfo['contact_email'])
+					->setSkipConfirmationIfEmail($standardInfo['email'])
 					->setFirstname($standardInfo['first_name'])
 					->setLastname($standardInfo['last_name'])
-					->setEmail($standardInfo['contact_email'])
+					->setEmail($standardInfo['email'])
 					->setPassword($randomPassword)
 					->setConfirmation($randomPassword)
 					->setFacebookUid($this->_getSession()->getUid());
 
 		//FB: Show my sex in my profile.
-		if($standardInfo['sex'] && $gender=Mage::getResourceSingleton('customer/customer')->getAttribute('gender')){
+		if(isset($standardInfo['gender']) && $gender=Mage::getResourceSingleton('customer/customer')->getAttribute('gender')){
 			$genderOptions = $gender->getSource()->getAllOptions();
 			foreach($genderOptions as $option){
-				if($option['label']==ucfirst($standardInfo['sex'])){
+				if($option['label']==ucfirst($standardInfo['gender'])){
 					 $customer->setGender($option['value']);
 					 break;
 				}
@@ -146,9 +142,9 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		}
 		
 		//FB: Show my full birthday in my profile.
-       	if(count(explode('/',$standardInfo['birthday_date']))==3){
+       	if(isset($standardInfo['birthday']) && count(explode('/',$standardInfo['birthday']))==3){
 			
-       		$dob = $standardInfo['birthday_date'];
+       		$dob = $standardInfo['birthday'];
 			
        		if(method_exists($this,'_filterDates')){
        			$filtered = $this->_filterDates(array('dob'=>$dob), array('dob'));
@@ -160,7 +156,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		
 		//$customer->getGroupId(); // needed in 1.3.x.x ?
 		
-		//for future versions and easy mods :)
+		//for future versions and easy mods ;)
 		if ($this->getRequest()->getParam('is_subscribed', false)) {
 			$customer->setIsSubscribed(1);
 		}
@@ -179,9 +175,8 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 			$this->_getCustomerSession()->addSuccess(
 				$this->__('Thank you for registering with %s', Mage::app()->getStore()->getFrontendName()) .
 				'. ' . 
-				$this->__('You will recieve welcome email with registration info in a moment.')
+				$this->__('You will receive welcome email with registration info in a moment.')
 			);
-			//if not change password or click here forget password
 			
 			$customer->sendNewAccountEmail();
 			
