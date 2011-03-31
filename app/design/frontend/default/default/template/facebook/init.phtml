@@ -1,7 +1,7 @@
-
 <!-- BEGIN Inchoo Facebook Connect -->
 <div id="fb-root"></div>
 <script type="text/javascript">
+//<![CDATA[
 window.fbAsyncInit = function() {
 	FB.init({
 		appId  : <?php echo json_encode($this->getApiKey()) ?>,
@@ -21,7 +21,7 @@ window.fbAsyncInit = function() {
 
 document.observe('click', function(e){
 	var target = e.findElement('a[rel^=facebook-connect]') || e.findElement('button[rel^=facebook-connect]');
-	if (target && target.rel=='facebook-connect') {
+	if (target && target.readAttribute('rel')=='facebook-connect') {
 		e.stop();
 		try{
 			FB.login(function(response){
@@ -30,5 +30,6 @@ document.observe('click', function(e){
 		}catch(error){}
 	}
 });
+//]]>
 </script>
 <!-- END Inchoo Facebook Connect -->

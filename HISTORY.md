@@ -1,3 +1,8 @@
+## 0.9.4
+  
+  * Added enable/disable setting, better output handling.
+  * Small javascript improvements and text changes.
+
 ## 0.9.3
   
   * Facebook client rewrite, new graph apis implemented and used.

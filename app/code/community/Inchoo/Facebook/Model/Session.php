@@ -1,10 +1,10 @@
 <?php
 /**
  * Facebook session model
- *
+ * 
  * @category   Inchoo
  * @package    Inchoo_Facebook
- * @author     Inchoo <web@inchoo.net>
+ * @author     Ivan Weiler <ivan.weiler@gmail.com>
  */
 class Inchoo_Facebook_Model_Session extends Varien_Object
 {

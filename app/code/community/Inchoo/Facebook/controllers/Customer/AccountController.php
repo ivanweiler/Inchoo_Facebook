@@ -4,12 +4,20 @@
  *
  * @category   Inchoo
  * @package    Inchoo_Facebook
- * @author     Ivan Weiler, Inchoo <web@inchoo.net>
- * @copyright  Copyright (c) 2011 Inchoo d.o.o. (http://inchoo.net)
- * @license    http://opensource.org/licenses/gpl-license.php  GNU General Public License (GPL)
+ * @author     Ivan Weiler <ivan.weiler@gmail.com>
  */
 class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Front_Action
 {
+	
+    public function preDispatch()
+    {
+        parent::preDispatch();
+
+        if (!Mage::getSingleton('facebook/config')->isEnabled()) {
+            $this->norouteAction();
+            return;
+        }
+    }	
 
 	public function connectAction()
     {

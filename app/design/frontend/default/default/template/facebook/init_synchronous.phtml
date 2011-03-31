@@ -7,7 +7,7 @@ FB.init({ apiKey:<?php echo json_encode($this->getApiKey()) ?>, cookie:true, xfb
 
 document.observe('click', function(e){
 	var target = event.findElement('a[rel^=facebook-connect]') || event.findElement('button[rel^=facebook-connect]');
-	if (target) {
+	if (target && target.readAttribute('rel')=='facebook-connect') {
 		e.stop();
 		FB.login(function(response){
 			if(response.status=='connected') setLocation('<?php echo $this->getConnectUrl() ?>');
