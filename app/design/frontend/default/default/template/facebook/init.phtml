@@ -7,7 +7,8 @@ window.fbAsyncInit = function() {
 		appId  : <?php echo json_encode($this->getApiKey()) ?>,
 		status : true, // check login status
 		cookie : true, // enable cookies to allow the server to access the session
-		xfbml  : true  // parse XFBML
+		xfbml  : true,  // parse XFBML
+		channelUrl : '<?php echo $this->getChannelUrl() ?>'  // custom channel
 	});
 	Event.fire(window, "facebook:fbAsyncInit");
 };
