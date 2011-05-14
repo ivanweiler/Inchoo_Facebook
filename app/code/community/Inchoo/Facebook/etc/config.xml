@@ -53,6 +53,15 @@
                 </facebook>
             </updates>
         </layout>
+        <translate>
+            <modules>
+                <Inchoo_Facebook>
+                    <files>
+                        <default>Inchoo_Facebook.csv</default>
+                    </files>
+                </Inchoo_Facebook>
+            </modules>
+        </translate>      
     </frontend>
     
     <default>
