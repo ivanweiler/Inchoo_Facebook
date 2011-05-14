@@ -1,12 +1,12 @@
-About
------
+Facebook Connect Magento Extension
+==================================
 
-Facebook Connect Magento Extension enables customers fast and easy registration and login with their Facebook identity.
+Magento extension that enables customers fast and easy registration and login with their Facebook identity.
 
 For instalation instructions, additional help and demo visit:  
 <http://inchoo.net/ecommerce/magento/facebook-connect-magento-extension/>
 
-Copyright © 2010-2011 Ivan Weiler
+Copyright (c) 2010-2011 Ivan Weiler
 
 Changelog
 ---------
