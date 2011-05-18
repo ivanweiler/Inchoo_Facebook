@@ -11,6 +11,11 @@ Copyright (c) 2010-2011 Ivan Weiler
 Changelog
 ---------
 
+* 0.9.5
+
+  * Custom channel added. Should increase performance and resolve possible https warnings in some browsers without flash.
+  * Translations added thanks to Dino, Roberto, Simon, Bruno Alexandre, jemoon, Rico van de Vin, Niels, Casper Munk, Matthias Zeis, ivan balabanov.
+
 * 0.9.4
 
   * Added enable/disable setting, better output handling.

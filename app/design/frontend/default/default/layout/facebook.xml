@@ -2,27 +2,18 @@
 <layout>
 
 	<default>
-        
 		<reference name="after_body_start">
-			<block type="facebook/template" template="facebook/init.phtml" name="facebook_init" />
-		</reference>
-        
-		<!-- example of old deprecated synchronous implementation
-		<reference name="before_body_end">
-			<block type="facebook/template" template="facebook/init_synchronous.phtml" name="facebook_init" />
-		</reference>
-		-->
-
+            <block type="facebook/template" template="facebook/init.phtml" name="facebook_init" />
+        </reference>
 		<reference name="top.links">
 			<action method="addLink" translate="label title" module="facebook" ifconfig="customer/facebook/enabled"><label>Connect with Facebook</label><url helper="facebook/getConnectUrl"/><title>Facebook Connect</title><prepare/><urlParams/><position>110</position><liParams/><aParams><rel>facebook-connect</rel></aParams></action>
-		</reference>        
-        
+        </reference> 
 	</default>
 	
 	<customer_account_login>
 		<reference name="content">
-			<block type="facebook/template" template="facebook/login.phtml" name="facebook_login" />
-		</reference>
+    		<block type="facebook/template" template="facebook/login.phtml" name="facebook_login" />
+    	</reference>
 	</customer_account_login>
 
 </layout>
