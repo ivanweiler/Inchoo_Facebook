@@ -61,8 +61,20 @@
                     </files>
                 </Inchoo_Facebook>
             </modules>
-        </translate>      
+        </translate>
     </frontend>
+    
+    <adminhtml>
+        <translate>
+            <modules>
+                <Inchoo_Facebook>
+                    <files>
+                        <default>Inchoo_Facebook.csv</default>
+                    </files>
+                </Inchoo_Facebook>
+            </modules>
+        </translate>    
+    </adminhtml>
     
     <default>
     	<customer>
