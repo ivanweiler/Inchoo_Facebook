@@ -65,7 +65,7 @@ class Inchoo_Facebook_Model_Client
 		if ($path[0] != '/') {
 			$path = '/'.$path;
 		}
-		$url .= self::FACEBOOK_GRAPH_URI.$path;
+		$url = self::FACEBOOK_GRAPH_URI.$path;
 
 		$params['method'] = 'GET'; //??
 		
