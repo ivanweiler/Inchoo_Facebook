@@ -10,6 +10,10 @@ Copyright (c) 2010-2011 Ivan Weiler
 
 Changelog
 ---------
+* 0.9.7
+
+  * Swedish, Czech, Turkish and Korean translations added thanks to Andreas Karlsson, Pavel Hrdlicka, ea and COBAY.
+  
 * 0.9.6
 
   * Bugfix release. Fixed undefined variable notice in client thanks to Toni Grigoriu.
