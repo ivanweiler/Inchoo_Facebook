@@ -12,7 +12,7 @@ Changelog
 ---------
 * 0.9.7
 
-  * Swedish, Czech, Turkish and Korean translations added thanks to Andreas Karlsson, Pavel Hrdlicka, ea and COBAY.
+  * Estonian, Swedish, Czech, Turkish and Korean translations added thanks to Sir Mull, Andreas Karlsson, Pavel Hrdlicka, ea and COBAY.
   
 * 0.9.6
 
