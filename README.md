@@ -10,6 +10,10 @@ Copyright (c) 2010-2011 Ivan Weiler
 
 Changelog
 ---------
+* 0.9.8
+
+  * Version fix, licenses added, connect release.
+  
 * 0.9.7
 
   * Estonian, Swedish, Czech, Turkish and Korean translations added thanks to Sir Mull, Andreas Karlsson, Pavel Hrdlicka, ea and COBAY.
