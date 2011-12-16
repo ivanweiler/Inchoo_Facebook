@@ -2,44 +2,55 @@
 /**
  * Facebook session model
  * 
- * @category Inchoo
- * @package Inchoo_Facebook
- * @author Ivan Weiler <ivan.weiler@gmail.com>
+ * @category   Inchoo
+ * @package    Inchoo_Facebook
+ * @author     Ivan Weiler <ivan.weiler@gmail.com>
  * @copyright Inchoo (http://inchoo.net)
  * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class Inchoo_Facebook_Model_Session extends Varien_Object
 {
 	private $_client;
+	private $_payload;
+	private $_signature;
 
 	public function __construct()
 	{
-		if($this->getCookie()){
-			$data = array();
-			parse_str(trim($this->getCookie(),'"'), $data);
-			$this->setData($data);
+		if($this->getCookie()) {
+			list($encodedSignature, $payload) = explode('.', $this->getCookie(), 2);
+			
+    		//decode data
+			$signature = base64_decode(strtr($encodedSignature, '-_', '+/'));
+    		$data = json_decode(base64_decode(strtr($payload, '-_', '+/')), true);
+    		
+    		$this->setData($data);
+    		
+    		//compatibility hack
+    		$this->setUid((string)$this->getUserId());
+    		
+    		$this->_signature = $signature;
+    		$this->_payload = $payload;
 		}
 	}
 	
 	public function isConnected()
     {
-    	if(!$this->validate()) {
-    		return false;
-    	}
-		return true;
+		return $this->validate();
     }
 
     public function validate()
     {
-		$params = $this->getData();
-		unset($params['sig']);
-		
-		return ($this->getClient()->generateSig($params)==$this->getSig());
+    	if(!$this->hasData()) {
+    		return false;
+    	}
+    	
+		$expectedSignature = hash_hmac('sha256', $this->_payload, Mage::getSingleton('facebook/config')->getSecret(), true);
+		return ($expectedSignature==$this->_signature);
     }
      
     public function getCookie()
     {
-    	return Mage::app()->getRequest()->getCookie('fbs_'.Mage::getSingleton('facebook/config')->getApiKey(), false);
+    	return Mage::app()->getRequest()->getCookie('fbsr_'.Mage::getSingleton('facebook/config')->getApiKey(), false);
     }
 	     
 	public function getClient()

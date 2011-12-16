@@ -10,6 +10,11 @@ Copyright (c) 2010-2011 Ivan Weiler
 
 Changelog
 ---------
+* 0.9.9
+
+  * Compatible with new Facebook authentication changes.
+  * Event.fire changed to document object, to avoid javascript conflict (commented, but left for custom use).
+  
 * 0.9.8
 
   * Version fix, licenses added, connect release.

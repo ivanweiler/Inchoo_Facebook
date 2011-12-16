@@ -2,9 +2,9 @@
 /**
  * Facebook Graph/Rest client
  *
- * @category Inchoo
- * @package Inchoo_Facebook
- * @author Ivan Weiler <ivan.weiler@gmail.com>
+ * @category   Inchoo
+ * @package    Inchoo_Facebook
+ * @author     Ivan Weiler <ivan.weiler@gmail.com>
  * @copyright Inchoo (http://inchoo.net)
  * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -17,6 +17,8 @@ class Inchoo_Facebook_Model_Client
 	protected $_apiKey;
 	protected $_secret;
 	protected $_session;
+	
+	protected $_accessToken;
 
 	protected static $_httpClient; 
 
@@ -72,7 +74,7 @@ class Inchoo_Facebook_Model_Client
 		$params['method'] = 'GET'; //??
 		
 		$result = $this->_oauthRequest($url, $params);
-		
+
 		if(is_array($result) && isset($result['error'])) {
 			throw new Mage_Core_Exception($result['error']['message'], 0);
 		}
@@ -130,44 +132,58 @@ class Inchoo_Facebook_Model_Client
 		return $this->rest('batch.run', $params);
 	}
 	
-	public function generateSig($params)
+	protected function _getAccessToken()
 	{
-		$str = '';
-    	ksort($params);
-    	foreach ($params as $k=>$v) {
-      		$str .= "$k=$v";
-    	}
-    	$str .= $this->_secret;
-    	return md5($str);
+		if($this->_accessToken) {
+			return $this->_accessToken;
+		}
+		
+		try {
+			$accessTokenResponse = self::_getHttpClient()
+				->setUri(self::FACEBOOK_GRAPH_URI.'/oauth/access_token')
+				->setMethod(Zend_Http_Client::POST)
+				->resetParameters()
+				->setParameterPost($this->_prepareParams(array(
+					'client_id'		=>	$this->_apiKey,
+					'client_secret'	=>	$this->_secret,
+					'redirect_uri'	=>	'',
+					'code'			=>	$this->_session->getCode(),
+					//'type'			=>	'client_cred'
+				)))
+				->request()
+				->getBody();
+				
+		    $responseParams = array();
+    		parse_str($accessTokenResponse, $responseParams);
+    		if (isset($responseParams['access_token'])) {
+      			$this->_accessToken = $responseParams['access_token'];
+    		}				
+		} catch(Exception $e) {}
+		
+		if(!$this->_accessToken) {
+			$this->_accessToken = $this->_apiKey .'|'. $this->_secret;
+		}
+		
+		return $this->_accessToken;
 	}
 	
 	protected function _prepareParams($params)
 	{
-		//new OAuth thingy
-		if (!isset($params['access_token'])) {
-			if ($this->_session->hasData('access_token')) {
-	        	$params['access_token'] = $this->_session->getData('access_token');
-	      	} else {
-	      		//@todo: check this in newer fb sdk ?!
-	        	$params['access_token'] = $this->_apiKey .'|'. $this->_secret;
-	      	}
-		}
-      	
 	    foreach ($params as $key => &$val) {
       		if (!is_array($val)) continue;
         	$val = Zend_Json::encode($val);
     	}
-		
-		if(isset($params['sig'])) {
-			unset($params['sig']);
-		}
-		$params['sig'] = $this->generateSig($params);
-		
+    	
 		return $params;
 	}
 	
 	protected function _oauthRequest($url, $params)
 	{
+		
+		if (!isset($params['access_token'])) {
+			$params['access_token'] = $this->_getAccessToken();
+		}
+				
 		$params = $this->_prepareParams($params);
 		
 		$client = self::_getHttpClient()
@@ -182,9 +198,12 @@ class Inchoo_Facebook_Model_Client
 			throw new Mage_Core_Exception('Service temporarily unavailable.');
 		}
 		
+		/* 400 is valid fb response !!
 		if(!$response->isSuccessful()) {
+			die();
 			throw new Mage_Core_Exception('Service temporarily unavailable.');
 		}
+		*/
 		
 		$result = Zend_Json::decode($response->getBody());
 		

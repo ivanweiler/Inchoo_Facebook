@@ -13,21 +13,22 @@
 //<![CDATA[
 window.fbAsyncInit = function() {
 	FB.init({
-		appId  : <?php echo json_encode($this->getApiKey()) ?>,
-		status : true, // check login status
-		cookie : true, // enable cookies to allow the server to access the session
-		xfbml  : true,  // parse XFBML
-		channelUrl : '<?php echo $this->getChannelUrl() ?>'  // custom channel
+		appId		: <?php echo json_encode($this->getApiKey()) ?>,	// App ID
+		channelUrl	: '<?php echo $this->getChannelUrl() ?>',			// custom channel url				
+		status		: true,												// check login status
+		cookie		: true,												// enable cookies to allow the server to access the session
+		oauth		: true,												// enable OAuth 2.0
+		xfbml		: true												// parse XFBML
 	});
-	Event.fire(window, "facebook:fbAsyncInit");
+	//document.fire("facebook:fbAsyncInit");
 };
 
-(function() {
-	var e = document.createElement('script');
-	e.src = document.location.protocol + '//connect.facebook.net/<?php echo $this->getLocale() ?>/all.js';
-	e.async = true;
-	document.getElementById('fb-root').appendChild(e);
-}());
+(function(d){
+	var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+	js = d.createElement('script'); js.id = id; js.async = true;
+	js.src = "//connect.facebook.net/<?php echo $this->getLocale() ?>/all.js";
+	d.getElementsByTagName('head')[0].appendChild(js);
+}(document));
 
 document.observe('click', function(e){
 	var target = e.findElement('a[rel^=facebook-connect]') || e.findElement('button[rel^=facebook-connect]');
@@ -36,7 +37,7 @@ document.observe('click', function(e){
 		try{
 			FB.login(function(response){
 				if(response.status=='connected') setLocation('<?php echo $this->getConnectUrl() ?>');
-			}, {perms:<?php echo $this->getRequiredPermissions() ?>});
+			}, {scope: <?php echo $this->getRequiredPermissions() ?>});
 		}catch(error){}
 	}
 });
