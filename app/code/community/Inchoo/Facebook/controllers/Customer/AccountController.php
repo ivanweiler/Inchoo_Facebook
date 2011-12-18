@@ -23,7 +23,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 
 	public function connectAction()
     {
-
+    	
     	if(!$this->_getSession()->validate()) {
     		$this->_getCustomerSession()->addError($this->__('Facebook connection failed.'));
     		$this->_redirect('customer/account');
@@ -35,7 +35,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
     	$customer = Mage::getModel('customer/customer');
     	
     	$collection = $customer->getCollection()
-    	 			->addAttributeToFilter('facebook_uid', (string)$this->_getSession()->getUid())
+    	 			->addAttributeToFilter('facebook_uid', $this->_getSession()->getUid())
     				->setPageSize(1);
     				
     	if($customer->getSharingConfig()->isWebsiteScope()) {
@@ -82,10 +82,10 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		
         //let's go with e-mail
         
-        try{
+        try {
         	$standardInfo = $this->_getSession()->getClient()->call("/me");
         	
-		}catch(Mage_Core_Exception $e){
+		} catch(Mage_Core_Exception $e) {
     		$this->_getCustomerSession()->addError(
     			$this->__('Facebook connection failed.') .
     			' ' . 
@@ -140,7 +140,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 					->setConfirmation($randomPassword)
 					->setFacebookUid($this->_getSession()->getUid());
 
-		//FB: Show my sex in my profile.
+		//FB: Show my sex in my profile
 		if(isset($standardInfo['gender']) && $gender=Mage::getResourceSingleton('customer/customer')->getAttribute('gender')){
 			$genderOptions = $gender->getSource()->getAllOptions();
 			foreach($genderOptions as $option){
@@ -151,7 +151,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 			}
 		}
 		
-		//FB: Show my full birthday in my profile.
+		//FB: Show my full birthday in my profile
        	if(isset($standardInfo['birthday']) && count(explode('/',$standardInfo['birthday']))==3){
 			
        		$dob = $standardInfo['birthday'];

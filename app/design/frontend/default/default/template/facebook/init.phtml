@@ -13,14 +13,14 @@
 //<![CDATA[
 window.fbAsyncInit = function() {
 	FB.init({
-		appId		: <?php echo json_encode($this->getApiKey()) ?>,	// App ID
-		channelUrl	: '<?php echo $this->getChannelUrl() ?>',			// custom channel url				
-		status		: true,												// check login status
-		cookie		: true,												// enable cookies to allow the server to access the session
-		oauth		: true,												// enable OAuth 2.0
-		xfbml		: true												// parse XFBML
+		appId		: <?php echo json_encode($this->getApiKey()) ?>,
+		channelUrl	: '<?php echo $this->getChannelUrl() ?>',
+		status		: true,
+		cookie		: true,
+		oauth		: true,
+		xfbml		: true
 	});
-	//document.fire("facebook:fbAsyncInit");
+	document.fire("facebook:fbAsyncInit");
 };
 
 (function(d){

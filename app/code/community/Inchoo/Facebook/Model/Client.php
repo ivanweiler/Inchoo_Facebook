@@ -53,6 +53,12 @@ class Inchoo_Facebook_Model_Client
     	$this->_session = $session;
     	return $this;
     }
+    
+    public function setAccessToken($accessToken)
+	{
+		$this->_accessToken = $accessToken;
+		return $this;
+	}
 	
 	public function call(/* polymorphic */)
 	{
@@ -148,7 +154,6 @@ class Inchoo_Facebook_Model_Client
 					'client_secret'	=>	$this->_secret,
 					'redirect_uri'	=>	'',
 					'code'			=>	$this->_session->getCode(),
-					//'type'			=>	'client_cred'
 				)))
 				->request()
 				->getBody();
@@ -197,13 +202,6 @@ class Inchoo_Facebook_Model_Client
 		} catch(Exception $e) {
 			throw new Mage_Core_Exception('Service temporarily unavailable.');
 		}
-		
-		/* 400 is valid fb response !!
-		if(!$response->isSuccessful()) {
-			die();
-			throw new Mage_Core_Exception('Service temporarily unavailable.');
-		}
-		*/
 		
 		$result = Zend_Json::decode($response->getBody());
 		

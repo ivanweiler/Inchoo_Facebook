@@ -6,14 +6,15 @@ Magento extension that enables customers fast and easy registration and login wi
 For instalation instructions, additional help and demo visit:  
 <http://inchoo.net/ecommerce/magento/facebook-connect-magento-extension/>
 
-Copyright (c) 2010-2011 Ivan Weiler
+Copyright (c) 2012 Ivan Weiler, Inchoo
 
 Changelog
 ---------
 * 0.9.9
 
-  * Compatible with new Facebook authentication changes.
-  * Event.fire changed to document object, to avoid javascript conflict (commented, but left for custom use).
+  * Client and javascript compatible with new Facebook authentication changes.
+  * Event.fire changed to document object to avoid javascript conflicts.
+  * Asking for user_birthday permission from now on.
   * Norwegian translation added thanks to Magnus Alexander.
   
 * 0.9.8
