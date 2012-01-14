@@ -36,7 +36,10 @@ document.observe('click', function(e){
 		e.stop();
 		try{
 			FB.login(function(response){
-				if(response.status=='connected') setLocation('<?php echo $this->getConnectUrl() ?>');
+				if(response.status=='connected') {
+					Mage.Cookies.set('fb-referer', '<?php echo $this->getUrlBase64('*/*/*', array('_current' => true)); ?>');
+					setLocation('<?php echo $this->getConnectUrl() ?>');
+				}
 			}, {scope: <?php echo $this->getRequiredPermissions() ?>});
 		}catch(error){}
 	}

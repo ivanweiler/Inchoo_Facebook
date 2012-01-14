@@ -17,13 +17,20 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 
         if (!Mage::getSingleton('facebook/config')->isEnabled()) {
             $this->norouteAction();
-            return;
         }
-    }	
+        
+        return $this;
+    }
+    
+    public function postDispatch()
+    {
+    	parent::postDispatch();
+    	Mage::app()->getCookie()->delete('fb-referer');
+    	return $this;
+    }
 
 	public function connectAction()
     {
-    	
     	if(!$this->_getSession()->validate()) {
     		$this->_getCustomerSession()->addError($this->__('Facebook connection failed.'));
     		$this->_redirect('customer/account');
@@ -68,19 +75,18 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
         
         if($uidExist) {
         	$uidCustomer = $collection->getFirstItem();
-        	//additional fix:
-			if($uidCustomer->getConfirmation()){
+			if($uidCustomer->getConfirmation()) {
 				$uidCustomer->setConfirmation(null);
 				Mage::getResourceModel('customer/customer')->saveAttribute($uidCustomer, 'confirmation');
 			}
-			//
 			$this->_getCustomerSession()->setCustomerAsLoggedIn($uidCustomer);
-			$this->_redirectReferer();
+			//since FB redirects IE differently, it's wrong to use referer like before
+			$this->_loginPostRedirect();
 			return;        	
         }
         
 		
-        //let's go with e-mail
+        //let's go with an e-mail
         
         try {
         	$standardInfo = $this->_getSession()->getClient()->call("/me");
@@ -95,7 +101,6 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
     		return;    		
     	}
 		
-    	//@todo: check are first_name and last_name always there
 		if(!isset($standardInfo['email'])) {
     		$this->_getCustomerSession()->addError(
     			$this->__('Facebook connection failed.') .
@@ -110,11 +115,11 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 			->setWebsiteId(Mage::app()->getStore()->getWebsiteId())
 			->loadByEmail($standardInfo['email']);
 		
-		if($customer->getId()){
+		if($customer->getId()) {
 			$customer->setFacebookUid($this->_getSession()->getUid());
 			Mage::getResourceModel('customer/customer')->saveAttribute($customer, 'facebook_uid');
 			
-			if($customer->getConfirmation()){
+			if($customer->getConfirmation()) {
 				$customer->setConfirmation(null);
 				Mage::getResourceModel('customer/customer')->saveAttribute($customer, 'confirmation');
 			}
@@ -141,10 +146,10 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 					->setFacebookUid($this->_getSession()->getUid());
 
 		//FB: Show my sex in my profile
-		if(isset($standardInfo['gender']) && $gender=Mage::getResourceSingleton('customer/customer')->getAttribute('gender')){
+		if(isset($standardInfo['gender']) && $gender=Mage::getResourceSingleton('customer/customer')->getAttribute('gender')) {
 			$genderOptions = $gender->getSource()->getAllOptions();
-			foreach($genderOptions as $option){
-				if($option['label']==ucfirst($standardInfo['gender'])){
+			foreach($genderOptions as $option) {
+				if($option['label']==ucfirst($standardInfo['gender'])) {
 					 $customer->setGender($option['value']);
 					 break;
 				}
@@ -152,11 +157,11 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		}
 		
 		//FB: Show my full birthday in my profile
-       	if(isset($standardInfo['birthday']) && count(explode('/',$standardInfo['birthday']))==3){
+       	if(isset($standardInfo['birthday']) && count(explode('/',$standardInfo['birthday']))==3) {
 			
        		$dob = $standardInfo['birthday'];
 			
-       		if(method_exists($this,'_filterDates')){
+       		if(method_exists($this,'_filterDates')) {
        			$filtered = $this->_filterDates(array('dob'=>$dob), array('dob'));
        			$dob = current($filtered);
        		}
@@ -164,12 +169,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 			$customer->setDob($dob);
 		}
 		
-		//$customer->getGroupId(); // needed in 1.3.x.x ?
-		
-		//for future versions and easy mods ;)
-		if ($this->getRequest()->getParam('is_subscribed', false)) {
-			$customer->setIsSubscribed(1);
-		}
+		//$customer->setIsSubscribed(1);
 		
 		//registration will fail if tax required, also if dob, gender aren't allowed in profile
 		$errors = array();
@@ -209,6 +209,23 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 		}
 
     }
+    
+    protected function _loginPostRedirect()
+    {
+        $session = $this->_getCustomerSession();
+        $redirectUrl = Mage::getUrl('customer/account');
+		
+        if ($session->getBeforeAuthUrl() && $session->getBeforeAuthUrl()!=Mage::helper('customer')->getLogoutUrl()) {
+        	$redirectUrl = $session->getBeforeAuthUrl(true);
+        } elseif(($referer = $this->getRequest()->getCookie('fb-referer'))) {
+        	$referer = Mage::getModel('core/url')->getRebuiltUrl(Mage::helper('core')->urlDecode($referer));
+        	if($this->_isUrlInternal($referer)) {
+        		$redirectUrl = $referer;
+        	}
+        }
+        
+        $this->_redirectUrl($redirectUrl);
+    }    
 	
 	private function _getCustomerSession()
 	{
