@@ -13,7 +13,7 @@ Changelog
 * 1.0.0
   * Code changed to follow proper inchoo namespace. Layout and templates moved to inchoo/facebook/.
   * New referer logic, resolves IE problems.
-  * Catalan transaltion added thanks to Raül Pérez.
+  * Catalan translation added thanks to Raül Pérez. Chinese translation added thanks to magentochinese.org.
 
 * 0.9.9
 
