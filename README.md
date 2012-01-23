@@ -10,6 +10,11 @@ Copyright (c) 2012 Ivan Weiler, Inchoo
 
 Changelog
 ---------
+* 1.0.0
+  * Code changed to follow proper inchoo namespace. Layout and templates moved to inchoo/facebook.
+  * New referer logic, resolves IE problems
+  * Catalan transaltion added thanks to Raül Pérez
+
 * 0.9.9
 
   * Client and javascript compatible with new Facebook authentication changes.
