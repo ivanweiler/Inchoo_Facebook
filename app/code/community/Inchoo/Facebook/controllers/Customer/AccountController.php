@@ -214,11 +214,16 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
     {
         $session = $this->_getCustomerSession();
         $redirectUrl = Mage::getUrl('customer/account');
-		
-        if ($session->getBeforeAuthUrl() && $session->getBeforeAuthUrl()!=Mage::helper('customer')->getLogoutUrl()) {
+
+        if ($session->getBeforeAuthUrl() && 
+        	!in_array($session->getBeforeAuthUrl(), array(Mage::helper('customer')->getLogoutUrl(), Mage::getBaseUrl()))) {
         	$redirectUrl = $session->getBeforeAuthUrl(true);
         } elseif(($referer = $this->getRequest()->getCookie('fb-referer'))) {
-        	$referer = Mage::getModel('core/url')->getRebuiltUrl(Mage::helper('core')->urlDecode($referer));
+        	$referer = Mage::helper('core')->urlDecode($referer);
+        	
+        	//@todo: check why is this added in Magento 1.7
+        	//$referer = Mage::getModel('core/url')->getRebuiltUrl(Mage::helper('core')->urlDecode($referer));
+
         	if($this->_isUrlInternal($referer)) {
         		$redirectUrl = $referer;
         	}
