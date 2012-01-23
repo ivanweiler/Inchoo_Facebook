@@ -12,13 +12,11 @@ $installer = $this;
 
 $installer->startSetup();
 
-if (!$this->getAttribute('customer', 'facebook_uid', 'attribute_id')) {
-	$installer->addAttribute('customer', 'facebook_uid', array(
-	        'type'	 => 'varchar',
-	        'label'		=> 'Facebook Uid',
-	        'visible'   => false,
-			'required'	=> false
-	));
-}
+$installer->addAttribute('customer', 'facebook_uid', array(
+        'type'	 => 'varchar',
+        'label'		=> 'Facebook Uid',
+        'visible'   => false,
+		'required'	=> false
+));
 
 $installer->endSetup();
