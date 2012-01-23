@@ -32,7 +32,7 @@ class Inchoo_Facebook_TestController extends Mage_Core_Controller_Front_Action
 	
 	private function _getSession()
 	{
-		return Mage::getSingleton('facebook/session');
+		return Mage::getSingleton('inchoo_facebook/session');
 	}
 	
 	public function restTest1Action()
@@ -89,7 +89,7 @@ class Inchoo_Facebook_TestController extends Mage_Core_Controller_Front_Action
 	
 	public function localeTestAction()
 	{
-		var_dump(Mage::getModel('facebook/locale')->getOptionLocales());
+		var_dump(Mage::getModel('inchoo_facebook/locale')->getOptionLocales());
 		//var_dump(Mage::app()->getLocale()->getOptionLocales());
 		return;
 		
@@ -112,10 +112,10 @@ class Inchoo_Facebook_TestController extends Mage_Core_Controller_Front_Action
         
         //var_dump($locales);
 
-        //Mage::app()->saveCache(serialize($locales), 'facebook_locale', array(), 7*24*60*60);
+        //Mage::app()->saveCache(serialize($locales), 'inchoo_facebook_locale', array(), 7*24*60*60);
         //array(Mage_Core_Model_Config::CACHE_TAG)
 
-        //$locales = unserialize(Mage::app()->loadCache('facebook_locale')); //false
+        //$locales = unserialize(Mage::app()->loadCache('inchoo_facebook_locale')); //false
          
         var_dump($locales);
 		

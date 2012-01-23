@@ -15,7 +15,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
     {
         parent::preDispatch();
 
-        if (!Mage::getSingleton('facebook/config')->isEnabled()) {
+        if (!Mage::getSingleton('inchoo_facebook/config')->isEnabled()) {
             $this->norouteAction();
         }
         
@@ -234,7 +234,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
     
 	private function _getSession()
 	{
-		return Mage::getSingleton('facebook/session');
+		return Mage::getSingleton('inchoo_facebook/session');
 	}
 	
 }

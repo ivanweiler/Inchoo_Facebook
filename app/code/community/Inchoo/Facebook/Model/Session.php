@@ -44,21 +44,21 @@ class Inchoo_Facebook_Model_Session extends Varien_Object
     		return false;
     	}
     	
-		$expectedSignature = hash_hmac('sha256', $this->_payload, Mage::getSingleton('facebook/config')->getSecret(), true);
+		$expectedSignature = hash_hmac('sha256', $this->_payload, Mage::getSingleton('inchoo_facebook/config')->getSecret(), true);
 		return ($expectedSignature==$this->_signature);
     }
      
     public function getCookie()
     {
-    	return Mage::app()->getRequest()->getCookie('fbsr_'.Mage::getSingleton('facebook/config')->getApiKey(), false);
+    	return Mage::app()->getRequest()->getCookie('fbsr_'.Mage::getSingleton('inchoo_facebook/config')->getApiKey(), false);
     }
 	     
 	public function getClient()
 	{
 		if(is_null($this->_client)) {
-			$this->_client = Mage::getModel('facebook/client',array(
-									Mage::getSingleton('facebook/config')->getApiKey(),
-									Mage::getSingleton('facebook/config')->getSecret(),
+			$this->_client = Mage::getModel('inchoo_facebook/client',array(
+									Mage::getSingleton('inchoo_facebook/config')->getApiKey(),
+									Mage::getSingleton('inchoo_facebook/config')->getSecret(),
 									$this
 							));
 		}

@@ -12,7 +12,7 @@
     <sections>
         <customer>
         	<groups>
-        		<facebook translate="label" module="facebook">
+        		<facebook translate="label" module="inchoo_facebook">
                     <label>Facebook Connect Options</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>100</sort_order>
@@ -29,7 +29,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </enabled>
-                        <api_key translate="label" module="facebook">
+                        <api_key translate="label" module="inchoo_facebook">
                             <label>Application Api Key</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
@@ -37,7 +37,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </api_key>
-						<secret translate="label" module="facebook">
+						<secret translate="label" module="inchoo_facebook">
                             <label>Application Secret</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>30</sort_order>
@@ -45,10 +45,10 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </secret>
-						<locale translate="label" module="facebook">
+						<locale translate="label" module="inchoo_facebook">
                             <label>Locale</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>facebook/adminhtml_system_config_source_locale</source_model>
+                            <source_model>inchoo_facebook/adminhtml_system_config_source_locale</source_model>
                             <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>

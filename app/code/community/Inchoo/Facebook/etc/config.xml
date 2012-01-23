@@ -11,29 +11,18 @@
 <config>
     <modules>
         <Inchoo_Facebook>
-             <version>0.9.9</version>
+             <version>1.0.0</version>
         </Inchoo_Facebook>
     </modules>
     
     <global>
         <models>
-            <facebook>
+            <inchoo_facebook>
                 <class>Inchoo_Facebook_Model</class>
-            </facebook>
+            </inchoo_facebook>
         </models>
-		<blocks>
-			<facebook>
-                <class>Inchoo_Facebook_Block</class>
-            </facebook>
-        </blocks>
-        <helpers>
-			<facebook>
-                <class>Inchoo_Facebook_Helper</class>
-            </facebook>
-        </helpers>
-        
 		<resources>
-			<facebook_setup>
+			<inchoo_facebook_setup>
 				<setup>
 	               <module>Inchoo_Facebook</module>
 	               <class>Mage_Customer_Model_Entity_Setup</class>
@@ -41,25 +30,35 @@
 				<connection>
                     <use>core_setup</use>
                 </connection>
-			</facebook_setup>
+			</inchoo_facebook_setup>
 		</resources>
+		<blocks>
+			<inchoo_facebook>
+                <class>Inchoo_Facebook_Block</class>
+            </inchoo_facebook>
+        </blocks>
+        <helpers>
+			<inchoo_facebook>
+                <class>Inchoo_Facebook_Helper</class>
+            </inchoo_facebook>
+        </helpers>
     </global>
     
     <frontend>
 		<routers>
-            <facebook>
+            <inchoo_facebook>
                 <use>standard</use>
                 <args>
                     <module>Inchoo_Facebook</module>
-                    <frontName>facebook</frontName>
+                    <frontName>inchoo_facebook</frontName>
                 </args>
-            </facebook>
+            </inchoo_facebook>
         </routers>
 		<layout>
             <updates>
-                <facebook module="Inchoo_Facebook">
-                    <file>facebook.xml</file>
-                </facebook>
+                <inchoo_facebook module="Inchoo_Facebook">
+                    <file>inchoo/facebook.xml</file>
+                </inchoo_facebook>
             </updates>
         </layout>
         <translate>
