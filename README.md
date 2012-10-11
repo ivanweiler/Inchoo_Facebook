@@ -13,7 +13,8 @@ Changelog
 * 1.0.0
   * Code changed to follow proper inchoo namespace. Layout and templates moved to inchoo/facebook/.
   * New referer logic, resolves IE problems.
-  * Catalan, Chinese(China), Italian, Chinese(Taiwan) and Russian translation added thanks to Raül Pérez, magentochinese.org, Mitch, pkduck, tuvinez.
+  * Catalan, Chinese(China), Italian, Chinese(Taiwan) and Russian translations added thanks to Raül Pérez, magentochinese.org, Mitch, pkduck, tuvinez.
+  * Hungarian translation added thanks to Milan.
 * 0.9.9
   * Client and javascript compatible with new Facebook OAuth2 authentication changes.
   * Event.fire changed to document object to avoid javascript conflicts.
