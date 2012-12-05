@@ -1,4 +1,4 @@
-app/code/community/Inchoo/Facebook/                    app/code/community/Inchoo/Facebook/
-app/design/frontend/default/default/layout/inchoo/*    app/design/frontend/default/default/layout/inchoo/
-app/design/frontend/default/default/template/inchoo/*  app/design/frontend/default/default/template/inchoo/
-app/etc/modules/*                                      app/etc/modules/
+app/code/community/Inchoo/Facebook/                 app/code/community/Inchoo/Facebook/
+app/design/frontend/base/default/layout/inchoo/*    app/design/frontend/base/default/layout/inchoo/
+app/design/frontend/base/default/template/inchoo/*  app/design/frontend/base/default/template/inchoo/
+app/etc/modules/*                                   app/etc/modules/
