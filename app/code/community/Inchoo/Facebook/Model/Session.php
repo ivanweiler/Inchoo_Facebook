@@ -10,9 +10,9 @@
  */
 class Inchoo_Facebook_Model_Session extends Varien_Object
 {
-	protected $_client;
-	protected $_payload;
-	protected $_signature;
+	private $_client;
+	private $_payload;
+	private $_signature;
 
 	public function __construct()
 	{
