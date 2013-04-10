@@ -232,12 +232,12 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
         $this->_redirectUrl($redirectUrl);
     }    
 	
-	private function _getCustomerSession()
+	protected function _getCustomerSession()
 	{
 		return Mage::getSingleton('customer/session');
 	}
     
-	private function _getSession()
+	protected function _getSession()
 	{
 		return Mage::getSingleton('inchoo_facebook/session');
 	}

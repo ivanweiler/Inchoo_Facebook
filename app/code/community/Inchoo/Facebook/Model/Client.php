@@ -208,7 +208,7 @@ class Inchoo_Facebook_Model_Client
 		return $result;			
 	}
 	
-	private static function _getHttpClient()
+	protected static function _getHttpClient()
     {
         if (!self::$_httpClient instanceof Varien_Http_Client) {
             self::$_httpClient = new Varien_Http_Client();
