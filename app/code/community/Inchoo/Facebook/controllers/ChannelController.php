@@ -34,6 +34,11 @@ class Inchoo_Facebook_ChannelController extends Mage_Core_Controller_Front_Actio
 		}
 		
 		$locale = $this->getRequest()->getParam('locale', false);
+		
+		if($locale && !in_array($locale, array_keys(Mage::getModel('inchoo_facebook/locale')->getLocales()))) {
+			$locale = false;
+		}
+				
 		if(!$locale) {
 			$locale = Mage::getSingleton('inchoo_facebook/config')->getLocale();
 		}
