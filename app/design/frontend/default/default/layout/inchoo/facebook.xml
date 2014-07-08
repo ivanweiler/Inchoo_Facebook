@@ -13,11 +13,15 @@
 	<default>
 		<reference name="after_body_start">
             <block type="inchoo_facebook/template" template="inchoo/facebook/init.phtml" name="inchoo_facebook_init" />
+        </default>
+
+	<customer_logged_out>
         </reference>
 		<reference name="top.links">
 			<action method="addLink" translate="label title" module="inchoo_facebook" ifconfig="customer/facebook/enabled"><label>Connect with Facebook</label><url helper="inchoo_facebook/getConnectUrl"/><title>Facebook Connect</title><prepare/><urlParams/><position>110</position><liParams/><aParams><rel>facebook-connect</rel></aParams></action>
         </reference> 
-	</default>
+	</customer_logged_out>
+
 	
 	<customer_account_login>
 		<reference name="content">
